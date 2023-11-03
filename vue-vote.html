@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue-Vote</title>
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-height: 100vh;
+    }
+    .item {
+      margin: 30px 40px;
+      text-align: center;
+    }
+    .progress {
+      /* 网格轨道 */
+      display: grid;
+      grid-template-columns: repeat(10, 20px);
+      grid-template-rows: repeat(7, 20px);
+      gap: 2px;
+      margin-bottom: 10px;
+    }
+    .progress-square {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #000;
+      border-radius: 5px;
+      background-color: transparent;
+    }
+    .filled {
+      background-color: #9be9a8;
+    }
+    .item h3 {
+      margin-bottom: 5px;
+      font-family: "宋体";
+    }
+    /* Botton */
+    .item button {
+      width: 25px;
+      padding: 0px;
+      margin: 0px 0px 10px 0px;
+      font-size: 16px;
+      border: 2px solid #000;
+      background-color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .item button:hover {
+      background-color: #f0f0f0;
+    }
+    .item button:active {
+      transform: scale(0.95);
+    }
+    .item button:first-of-type {
+      border-radius: 5px 0px 0px 5px;
+    }
+    .item button:last-of-type {
+      border-radius: 0px 5px 5px 0px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <div class="item" v-for="(item, index) in items" :key="index">
+      <h3>({{ index+1 }}).{{ names[index] }} Count: {{ item.value }}</h3>
+      <button @click="increment(index)">&plus;</button>
+      <button @click="decrement(index)">&minus;</button>
+      <div class="progress">
+        <div class="progress-square" v-for="n in countLimit" :key="n" :class="{ 'filled': n <= item.value }"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        names: ["Alice", "Bob", "Charlie", "David", "Eva", "Frank", "Grace", "Henry", "Ivy"], // 更改为你的人名数组
+        items: [],
+        countLimit: 69 // 设置计数上限
+      },
+      created() {
+        this.names.forEach(() => {
+          this.items.push({ value: 0 });
+        });
+      },
+      methods: {
+        increment(index) {
+          if (this.items[index].value < this.countLimit) {
+            this.items[index].value++;
+          }
+        },
+        decrement(index) {
+          if (this.items[index].value > 0) {
+            this.items[index].value--;
+          }
+        }
+      },
+      mounted() {
+        const self = this;
+        // 最多九键
+        const keyMappings = {
+          '!': 0, '@': 1, '#': 2, '$': 3, '%': 4, '^': 5, '&': 6, '*': 7, '(': 8
+        };
+        window.addEventListener('keypress', function(event) {
+          const key = event.key;
+          if (key >= '1' && key <= '9') {
+            const index = parseInt(key) - 1;
+            if (self.items[index].value < self.countLimit) {
+              self.increment(index);
+            }
+          } else if (event.shiftKey && key in keyMappings) {
+            const index = keyMappings[key];
+            if (self.items[index].value > 0) {
+              self.decrement(index);
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
